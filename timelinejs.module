@@ -1,0 +1,180 @@
+<?php
+/**
+ * @file
+ * Module providing a scrollable timeline view for Drupal events and nodes.
+ */
+
+/**
+ * Implements hook_help(). Provides online user help.
+ */
+function timelinejs_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#timelinejs':
+      return '<p>Provides a draggable and scrollable timeline view. Requires the views module and the libraries module.</p>';
+  }
+}
+
+/**
+ * Implements hook_theme
+ */
+function timelinejs_theme() {
+  $base = array('file' => 'timelinejs.theme.inc');
+  return array(
+    'timelinejs_nodata' => $base + array(),
+    'timelinejs_debug' => $base + array(
+      'arguments' => array('debug_array' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implements hook_views_api
+ */
+function timelinejs_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'timelinejs'),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory for plugin integration for date sources, image sources and timeline themes
+ */
+function timelinejs_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'timelinejs') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_type
+ */
+function timelinejs_ctools_plugin_type() {
+  return array(
+    'date_sources' => array(),
+    'image_sources' => array(),
+    'themes' => array(),
+  );
+}
+
+/**
+ * Returns the date conversion function name of a plugin
+ *
+ * @param $handler_name
+ *   Name of the field handler that the plugin has to support
+ *
+ * @return
+ *   Name of the date conversion function
+ */
+function timelinejs_plugins_get_callback($handler_name, $plugin_type) {
+  ctools_include('plugins');
+  $plugins = ctools_get_plugins('timelinejs', $plugin_type);
+  foreach ($plugins as $plugin) {
+    if ($plugin['handler_name'] == $handler_name) {
+      return ctools_plugin_get_function($plugin, 'callback');
+    }
+  }
+}
+
+/**
+ * Returns the currently logged-in user's timezone.
+ *
+ * @return the name of a timezone
+ */
+function timelinejs_get_timezone() {
+  global $user;
+  return (variable_get('configurable_timezones', 1) && $user->uid && drupal_strlen($user->timezone)) ? $user->timezone : variable_get('date_default_timezone', NULL);
+}
+
+function timelinejs_convert_to_gregorian($value, $date_format, $timezone, $db_timezone) {
+  $timezone = new DateTimezone($timezone);
+  $db_timezone = new DateTimezone($db_timezone);
+  switch ($date_format) {
+    case 'timestamp':
+      $date = new DateTime("@$value", $db_timezone);
+      break;
+
+    default:
+      $date = new DateTime("$value", $db_timezone);
+      break;
+  }
+  $date->setTimezone($timezone);
+  return $date->format('M d Y G:i:s');
+}
+
+function timelinejs_convert_to_iso($value, $date_format, $timezone, $db_timezone) {
+  $timezone = new DateTimezone($timezone);
+  $db_timezone = new DateTimezone($db_timezone);
+  switch ($date_format) {
+    case 'timestamp':
+      $date = new DateTime("@$value", $db_timezone);
+      break;
+
+    default:
+      $date = new DateTime("$value", $db_timezone);
+      break;
+  }
+  $date->setTimezone($timezone);
+  return $date->format('Y-m-d\TH:i:s\Z');
+}
+
+function timelinejs_convert_to_timestamp($value, $date_format, $timezone, $db_timezone) {
+  $timezone = new DateTimezone($timezone);
+  $db_timezone = new DateTimezone($db_timezone);
+  switch ($date_format) {
+    case 'timestamp':
+      $date = new DateTime("@$value", $db_timezone);
+      break;
+
+    default:
+      $date = new DateTime("$value", $db_timezone);
+      break;
+  }
+  $date->setTimezone($timezone);
+  return $date->format('U');
+}
+
+/**
+ * Check if all library files properly exist.
+ *
+ * @return: TRUE if everything is correct
+ *          FALSE if no library was found
+ *          string: with an error message of the missing file.
+ */
+function timelinejs_validate_library() {
+  if (module_exists('libraries')) {
+    $timeline_path = libraries_get_path('timelinejs');
+    $timeline_library_files = array(
+      '/js/timeline-min.js',
+      '/js/timeline.js',
+      '/css/timeline.css',
+      '/css/timeline.png',
+      '/css/themes/dark.css',
+      '/css/themes/timeline-dark.png',
+      '/css/themes/timeline-texture.png',
+    );
+    // check if library is available 'sites/all/libraries/timelinejs'
+    if (is_dir($timeline_path)) {
+      $messages = '';
+      foreach ($timeline_library_files as $file) {
+        $file = $timeline_path . $file;
+        if (!file_exists($file)) {
+          $messages .= t('Error: !timeline_filename not found.', array('!timeline_filename' => $file));
+        }
+      }
+      // no errors found
+      if ($messages == '') {
+        return TRUE;
+      }
+      else return $messages;
+    }
+  }
+  // no library found
+  return FALSE;
+}
+
+// TODO: REMOVE - jm
+function _timelinejs_to_dim($string) {
+  return intval($string) . (strpos($string, '%') !== FALSE ? '%' : 'px');
+}
+

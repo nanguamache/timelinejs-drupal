@@ -1,0 +1,34 @@
+
+REQUIREMENTS
+------------
+- Drupal 7.x 
+- Views 3.x module [1]
+- Libraries module [2]
+- Date API module [3]
+- jQuery Update module (DEV version with >=jQuery 1.7.1) [4]
+
+- Libraries:
+	TimelineJS
+
+[1] http://drupal.org/project/views
+[2] http://drupal.org/project/libraries
+[3] http://drupal.org/project/date
+[4] http://drupal.org/project/jquery_update
+
+
+INSTALLATION
+------------
+1. Copy all the module files into a subdirectory called sites/all/modules/timelinejs/
+   under your Drupal installation directory.
+
+2. Obtain the libraries of TimelineJS project
+
+   * You can download a prepackaged and version from
+     https://github.com/VeriteCo/TimelineJS (press the download button)
+
+3. Place the library into a new sites/all/libraries/timelinejs directory.
+   	You only need the "js" and the "css" folder out of the "compiled" directory	
+   	
+4. Go to administer >> modules and enable the timelinejs module.
+   Ensure that the Views, libraries and date api modules are installed and enabled.
+

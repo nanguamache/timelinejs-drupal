@@ -1,0 +1,15 @@
+name = Timeline based on timeline.verite.co
+description = Provides a draggable and scrollable timeline view. Requires the views module and the libraries module and makes use of the cck and date module if available.
+package = Views
+dependencies[] = views
+dependencies[] = ctools
+dependencies[] = date_api
+dependencies[] = jquery_update (>=7.x-2.x-dev)
+dependencies[] = libraries
+
+core = 7.x
+files[] = timelinejs.module
+files[] = timelinejs.theme.inc
+files[] = timelinejs_views_plugin_style.inc
+files[] = plugins/date_sources/post_date.inc
+files[] = plugins/date_sources/date_field.inc
