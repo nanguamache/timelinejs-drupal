@@ -6,7 +6,6 @@ Drupal.timelinejs = {
   },
   createWidget: function(id,args) {
    args = eval(args);
-   console.log(args);
    var timeline = new VMM.Timeline(id);
    timeline.init({source:args} );
   }
