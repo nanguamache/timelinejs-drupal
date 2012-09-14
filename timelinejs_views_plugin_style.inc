@@ -55,7 +55,6 @@ class timelinejs_views_plugin_style extends views_plugin_style {
       // load all plugins for date and image field supports. provided by this or other modules
       ctools_include('plugins');
       $date_sources = ctools_get_plugins('timelinejs', 'date_sources');
-      $image_sources = ctools_get_plugins('timelinejs', 'image_sources');
 
       // go through all available fields' handlers to check support for certain functionality
       foreach ($handlers as $field => $handler) {

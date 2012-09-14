@@ -52,7 +52,6 @@ function timelinejs_ctools_plugin_directory($module, $plugin) {
 function timelinejs_ctools_plugin_type() {
   return array(
     'date_sources' => array(),
-    'image_sources' => array(),
     'themes' => array(),
   );
 }
